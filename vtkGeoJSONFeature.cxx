@@ -33,6 +33,16 @@
 
 vtkStandardNewMacro(vtkGeoJSONFeature);
 
+namespace
+{
+  vtkOStreamWrapper& operator<<(vtkOStreamWrapper& os, const Json::Value& root)
+  {
+    Json::StyledStreamWriter writer;
+    writer.write(os,root);
+    return os;
+  }
+}
+
 //----------------------------------------------------------------------------
 vtkGeoJSONFeature::vtkGeoJSONFeature()
 {
@@ -641,5 +651,7 @@ void vtkGeoJSONFeature::PrintSelf(ostream &os, vtkIndent indent)
 {
     Superclass::PrintSelf(os, indent);
     os << indent << "vtkGeoJSONFeature" << std::endl;
-    os << indent << "Root: " << this->featureRoot << std::endl;
+    os << indent << "Root: ";
+    Json::StyledStreamWriter writer;
+    writer.write(os,this->featureRoot);
 }
