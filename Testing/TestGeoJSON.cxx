@@ -1,4 +1,5 @@
 //VTK includes
+#include <vtkNew.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
@@ -67,7 +68,7 @@ int TestGeoJSON(int argc, char **argv)
   inputGeoJSONFile = argv[1];
 
   // Instantiate the GeoJSON reader
-  vtkGeoJSONReader *reader = vtkGeoJSONReader::New();
+  vtkNew<vtkGeoJSONReader> reader;
   if (stringInputMode)
     {
     std::cout << "Setting StringInputMode true" << std::endl;
@@ -122,7 +123,7 @@ int TestGeoJSON(int argc, char **argv)
                 << schemaReader.getFormatedErrorMessages() << std::endl;
       return VTK_ERROR;
       }
-    if (!SetupFeatureProperties(schemaRoot, reader))
+    if (!SetupFeatureProperties(schemaRoot, reader.GetPointer()))
       {
       std::cerr << "Problem parsing schema input file" << std::endl;
       return VTK_ERROR;
@@ -138,28 +139,26 @@ int TestGeoJSON(int argc, char **argv)
   if (!outputVtkFile.empty())
     {
     std::cout << "Writing poly data to " << outputVtkFile << std::endl;
-    vtkSmartPointer<vtkPolyDataWriter> writer =
-      vtkSmartPointer<vtkPolyDataWriter>::New();
+    vtkNew<vtkPolyDataWriter> writer;
     writer->SetFileName(outputVtkFile.c_str());
     writer->SetInputData(outputData);
     writer->Update();
     }
 
   // Visualise in a render window
-  vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+  vtkNew<vtkPolyDataMapper> mapper;
   mapper->SetInputData(outputData);
 
-  vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
+  vtkNew<vtkActor> actor;
+  actor->SetMapper(mapper.GetPointer());
 
-  vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-  vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
-  renderWindow->AddRenderer(renderer);
+  vtkNew<vtkRenderer> renderer;
+  vtkNew<vtkRenderWindow> renderWindow;
+  renderWindow->AddRenderer(renderer.GetPointer());
 
-  vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-    vtkSmartPointer<vtkRenderWindowInteractor>::New();
-  renderWindowInteractor->SetRenderWindow(renderWindow);
-  renderer->AddActor(actor);
+  vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+  renderWindowInteractor->SetRenderWindow(renderWindow.GetPointer());
+  renderer->AddActor(actor.GetPointer());
   renderWindow->Render();
   renderWindowInteractor->Start();
 
