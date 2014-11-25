@@ -30,6 +30,8 @@ int TestGeoJSON(int argc, char **argv)
   bool showHelp = false;
   std::string inputGeoJSONFile;
   bool stringInputMode = false;
+  bool outlinePolygonsMode = false;
+  bool triangulatePolygonsMode = false;
   std::string inputSchemaFile;
   std::string outputVtkFile;
 
@@ -40,10 +42,14 @@ int TestGeoJSON(int argc, char **argv)
                   &showHelp, "show help message");
   arg.AddArgument("--help", vtksys::CommandLineArguments::NO_ARGUMENT,
                   &showHelp, "show help message");
-  arg.AddArgument("-s", vtksys::CommandLineArguments::NO_ARGUMENT,
-                  &stringInputMode, "flag to load file as string before parsing");
   arg.AddArgument("-j", vtksys::CommandLineArguments::SPACE_ARGUMENT,
                   &inputSchemaFile, "json-schema file specifying feature properties");
+  arg.AddArgument("-o", vtksys::CommandLineArguments::NO_ARGUMENT,
+                  &outlinePolygonsMode, "flag to set OutlinePolygons mode");
+  arg.AddArgument("-s", vtksys::CommandLineArguments::NO_ARGUMENT,
+                  &stringInputMode, "flag to load file as string before parsing");
+  arg.AddArgument("-t", vtksys::CommandLineArguments::NO_ARGUMENT,
+                  &triangulatePolygonsMode, "flag to set TriangulatePolygons mode");
   arg.AddArgument("-v", vtksys::CommandLineArguments::SPACE_ARGUMENT,
                   &outputVtkFile, "VTK output file");
 
@@ -86,6 +92,10 @@ int TestGeoJSON(int argc, char **argv)
     // Set source file
     reader->SetFileName(inputGeoJSONFile.c_str());
     }
+
+  // Set triangulate and outline modes
+  reader->SetOutlinePolygons(outlinePolygonsMode);
+  reader->SetTriangulatePolygons(triangulatePolygonsMode);
 
   // Process schema
   if (!inputSchemaFile.empty())
