@@ -68,7 +68,7 @@ vtkGeoJSONReader::~vtkGeoJSONReader()
 
 //----------------------------------------------------------------------------
 void vtkGeoJSONReader::
-AddFeatureProperty(char *name, vtkVariant& typeAndDefaultValue)
+AddFeatureProperty(const char *name, vtkVariant& typeAndDefaultValue)
 {
   vtkGeoJSONProperty property;
 
