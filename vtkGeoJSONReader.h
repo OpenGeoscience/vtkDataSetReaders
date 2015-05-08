@@ -75,7 +75,7 @@ public:
   // Description:
   // Specify feature property to read in with geometry objects
   // Note that defaultValue specifies both type & value
-  void AddFeatureProperty(char *name, vtkVariant& typeAndDefaultValue);
+  void AddFeatureProperty(const char *name, vtkVariant& typeAndDefaultValue);
 
 protected:
   vtkGeoJSONReader();
@@ -88,7 +88,7 @@ protected:
 
   // Decription:
   // Parse the Json Value corresponding to the root of the geoJSON data from the file
-  void ParseRoot(const Json::Value& root, vtkPolyData *output);
+  virtual void ParseRoot(const Json::Value& root, vtkPolyData *output);
 
   // Decription:
   // Verify if file exists and can be read by the parser
