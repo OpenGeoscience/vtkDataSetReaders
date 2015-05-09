@@ -35,6 +35,7 @@ int TestGeoJSON(int argc, char **argv)
   bool triangulatePolygonsMode = false;
   std::string inputSchemaFile;
   std::string outputVtkFile;
+  std::string serializedPropertiesArrayName;
 
   vtksys::CommandLineArguments arg;
   arg.Initialize(argc, argv);
@@ -47,6 +48,9 @@ int TestGeoJSON(int argc, char **argv)
                   &inputSchemaFile, "json-schema file specifying feature properties");
   arg.AddArgument("-o", vtksys::CommandLineArguments::NO_ARGUMENT,
                   &outlinePolygonsMode, "flag to set OutlinePolygons mode");
+  arg.AddArgument("-p", vtksys::CommandLineArguments::SPACE_ARGUMENT,
+                  &serializedPropertiesArrayName,
+                  "name of cell data array for storing serialized properties");
   arg.AddArgument("-s", vtksys::CommandLineArguments::NO_ARGUMENT,
                   &stringInputMode, "flag to load file as string before parsing");
   arg.AddArgument("-t", vtksys::CommandLineArguments::NO_ARGUMENT,
@@ -97,6 +101,11 @@ int TestGeoJSON(int argc, char **argv)
   // Set triangulate and outline modes
   reader->SetOutlinePolygons(outlinePolygonsMode);
   reader->SetTriangulatePolygons(triangulatePolygonsMode);
+  if (serializedPropertiesArrayName.size() > 0)
+    {
+    reader->SetSerializedPropertiesArrayName(
+      serializedPropertiesArrayName.c_str());
+    }
 
   // Process schema
   if (!inputSchemaFile.empty())
