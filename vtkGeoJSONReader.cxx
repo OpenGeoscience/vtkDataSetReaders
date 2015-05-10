@@ -53,6 +53,7 @@ vtkGeoJSONReader::vtkGeoJSONReader()
   this->StringInputMode = false;
   this->TriangulatePolygons = false;
   this->OutlinePolygons = false;
+  this->SerializedPropertiesArrayName = NULL;
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(1);
   this->Internals = new GeoJSONReaderInternals;
@@ -221,6 +222,15 @@ void vtkGeoJSONReader::ParseRoot(const Json::Value& root, vtkPolyData *output)
   output->GetCellData()->AddArray(featureIdArray);
   featureIdArray->Delete();
 
+  // Initialize properties array
+  if (this->SerializedPropertiesArrayName)
+    {
+    vtkStringArray *propertiesArray = vtkStringArray::New();
+    propertiesArray->SetName(this->SerializedPropertiesArrayName);
+    output->GetCellData()->AddArray(propertiesArray);
+    propertiesArray->Delete();
+    }
+
   // Initialize properties arrays
   vtkAbstractArray *array;
   std::vector<vtkGeoJSONProperty>::iterator iter =
@@ -361,6 +371,18 @@ void vtkGeoJSONReader::ParseFeatureProperties(const Json::Value& propertiesNode,
         break;
       }
 
+    featureProperties.push_back(property);
+    }
+
+  // Add GeoJSON string if enabled
+  if (this->SerializedPropertiesArrayName)
+    {
+    property.Name = this->SerializedPropertiesArrayName;
+    Json::FastWriter writer;
+    writer.omitEndingLineFeed();
+    std::string propString = writer.write(propertiesNode);
+    property.Value = vtkVariant(propString);
+    vtkDebugMacro("Prop string: " << propString);
     featureProperties.push_back(property);
     }
 }
